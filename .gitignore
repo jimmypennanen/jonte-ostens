@@ -36,3 +36,7 @@ pnpm-error.log*
 build/
 dist/
 *.tsbuildinfo
+
+*.db-shm
+*.db-wal
+*.db
