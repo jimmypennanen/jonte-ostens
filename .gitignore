@@ -1,1 +1,38 @@
+# Database
 jonte-osten.db
+jonte-osten.db-shm
+jonte-osten.db-wal
+
+# Astro
+.astro/
+dist/
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Vercel
+.vercel/
+
+# Build output
+build/
+dist/
+*.tsbuildinfo
