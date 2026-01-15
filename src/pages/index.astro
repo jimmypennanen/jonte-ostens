@@ -1,0 +1,115 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Hero from '../components/Hero.astro';
+import CheeseCard from '../components/CheeseCard.astro';
+import Testimonial from '../components/Testimonial.astro';
+
+const featuredCheeses = [
+  {
+    name: 'Jontes Premium Grevé 2.0',
+    description: 'Den klassikern som startade det hela. Molnmjuk, rik på smak, och absolut det bästa Jonte någonsin gjort.',
+    price: '199 kr/hg',
+    pairing: 'Knäckebröd, fruktvin, nostalgi'
+  },
+  {
+    name: 'Gubbens Koppsvett Deluxe',
+    description: 'En bold ost som luktar precis som Jonte efter en lång dag på ostboden. En erfarenhet.',
+    price: '249 kr/hg',
+    pairing: 'Bara Jonte vet'
+  },
+  {
+    name: 'Smaskig Präst',
+    description: 'En soft wash som Jonte säger är "läkare för själen". Vi frågade inte vidare.',
+    price: '189 kr/hg',
+    pairing: 'Ljust vin, meditation'
+  }
+];
+
+const testimonials = [
+  {
+    quote: 'Jag har inte sett Jonte utan ost på 12 år.',
+    author: 'Karin',
+    role: 'Långtidskund'
+  },
+  {
+    quote: 'Jag förlorade mitt jobb men hittade meningen med livet i Jontes Grevé 2.0.',
+    author: 'Stefan',
+    role: 'Yrkesförändring'
+  },
+  {
+    quote: 'Denna ost fick mig att gifta om mig. Två gånger.',
+    author: 'Annika',
+    role: 'Livsförändrare'
+  }
+];
+---
+
+<MainLayout title="Hem">
+  <!-- Hero -->
+  <Hero
+    title="Jontes Ostbutik"
+    subtitle="Ost så bra att du börjar ljuga för familjen — En hyllning till Jonte Osten, den lokala ostprofeten"
+    cta={{ text: 'Visa ostarna', href: '#featured' }}
+  />
+
+  <!-- Veckans ost teaser -->
+  <section class="section-padding bg-white">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
+      <div class="card bg-gradient-to-br from-soft-yellow/50 to-light-green/50 border border-soft-yellow">
+        <div class="md:flex items-center justify-between">
+          <div>
+            <h2 class="mb-2">🌟 Veckans Ost</h2>
+            <p class="text-dark-brown/80 mb-4 md:mb-0">
+              <strong>Midnight Västerbotten</strong> — En mystisk ost som Jonte bara hittade. Helt magisk.
+            </p>
+          </div>
+          <a href="/veckans-ost" class="btn-secondary whitespace-nowrap">
+            Läs mer
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured cheeses -->
+  <section id="featured" class="section-padding bg-cream">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
+      <h2 class="text-center mb-12">Mest älskade ostar</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        {featuredCheeses.map(cheese => (
+          <CheeseCard {...cheese} />
+        ))}
+      </div>
+      <div class="text-center mt-12">
+        <a href="/produkterna" class="btn-primary">
+          Se alla produkter
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section-padding bg-white">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
+      <h2 class="text-center mb-12">Vad säger folk om Jonte?</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        {testimonials.map(testimonial => (
+          <Testimonial {...testimonial} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-dark-green text-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <h2 class="text-cream mb-6">Redo för en ostupplevelse?</h2>
+      <p class="text-lg mb-8 text-cream/90">
+        Besök oss idag och möt Jonte. Han kan vara knapphändig, men hans ostar talar för sig själva.
+      </p>
+      <a href="/kontakt" class="btn-secondary">
+        Kontakta oss
+      </a>
+    </div>
+  </section>
+</MainLayout>

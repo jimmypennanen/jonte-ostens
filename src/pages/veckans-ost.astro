@@ -1,0 +1,152 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Hero from '../components/Hero.astro';
+
+// Get current week number
+function getWeek(date: Date): number {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
+
+const currentWeek = getWeek(new Date());
+
+const currentCheese = {
+  name: 'Midnight Västerbotten',
+  description: 'En sammansmältning av midnattens mysterium och västerbottens rika traditioner. Denna ost är så intensiv att Jonte behövde ta en veckas paus efter första tuggan för att återhämta sig.',
+  whySelected: 'Jonte valde denna ost denna vecka för att den helt enkelt är det närmaste han kommer att hitta till perfektion i ostform. Enligt honom är detta det enda han behöver äta för att överleva de kommande 7 dagarna.',
+  howToEat: 'Serveras bäst på rumtemperatur med ett glas vatten i närheten. Skär i tunna skivor och njut långsamt. Jonte rekommenderar att äta denna ost medan du stirrar ut genom ett mörkt fönster och funderar på ostens djupa mening.',
+  dontPairWith: [
+    'Något sött (sockret försöker dölja ostens sanna väsen)',
+    'Annat än vatten att dricka (konkurrerar om uppmärksamhet)',
+    'Musik högre än viskningar (störar meditatönen)',
+    'Andra människor närvarande (de förstår inte)'
+  ],
+  previousWeeks: [
+    { week: 'Vecka 1', name: 'Grevé 2.0', mood: '🚀' },
+    { week: 'Vecka 2', name: 'Koppsvett', mood: '💪' },
+    { week: 'Vecka 3', name: 'Narkososten', mood: '😴' }
+  ]
+};
+---
+
+<MainLayout title="Veckans Ost">
+  <Hero
+    title="Veckans Ost"
+    subtitle="Jontes personliga urval"
+  />
+
+  <!-- Current Cheese Section -->
+  <section class="section-padding bg-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8">
+      <div class="grid lg:grid-cols-3 gap-12 items-start">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+          <div class="mb-8">
+            <h2 class="text-4xl md:text-5xl font-display font-bold text-dark-brown mb-2">
+              {currentCheese.name}
+            </h2>
+            <p class="text-lg text-dark-brown/60">
+              Vecka {currentWeek} av {new Date().getFullYear()}
+            </p>
+          </div>
+
+          <!-- Cheese Emoji Display -->
+          <div class="text-8xl mb-8 text-center md:text-left">
+            🧀
+          </div>
+
+          <!-- Description -->
+          <div class="prose prose-lg text-dark-brown/80 space-y-6 mb-12">
+            <p>
+              {currentCheese.description}
+            </p>
+          </div>
+
+          <!-- Why Selected -->
+          <div class="bg-soft-yellow/50 rounded-2xl p-8 mb-12 border-2 border-soft-yellow">
+            <h3 class="text-2xl font-display font-bold text-dark-brown mb-4">
+              Varför denna vecka?
+            </h3>
+            <p class="text-dark-brown/80 leading-relaxed">
+              {currentCheese.whySelected}
+            </p>
+          </div>
+
+          <!-- How to Eat -->
+          <div class="mb-12">
+            <h3 class="text-2xl font-display font-bold text-dark-brown mb-4">
+              Hur äter man denna ost?
+            </h3>
+            <p class="text-dark-brown/80 leading-relaxed mb-4">
+              {currentCheese.howToEat}
+            </p>
+          </div>
+
+          <!-- Don't Pair With -->
+          <div class="bg-dark-green/10 rounded-2xl p-8">
+            <h3 class="text-2xl font-display font-bold text-dark-brown mb-6">
+              PAIRA ALDRIG MED:
+            </h3>
+            <ul class="space-y-3">
+              {currentCheese.dontPairWith.map(item => (
+                <li class="flex items-start gap-3 text-dark-brown/80">
+                  <span class="text-dark-green font-bold mt-1">✗</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+          <!-- Previous Weeks -->
+          <div class="bg-white rounded-2xl p-6 shadow-md sticky top-8">
+            <h3 class="text-xl font-display font-bold text-dark-brown mb-6">
+              Tidigare veckor
+            </h3>
+            <div class="space-y-4">
+              {currentCheese.previousWeeks.map(week => (
+                <div class="pb-4 border-b border-dark-brown/10 last:border-b-0">
+                  <p class="text-xs font-semibold text-dark-green uppercase tracking-wide">
+                    {week.week}
+                  </p>
+                  <p class="font-display font-bold text-dark-brown mt-1">
+                    {week.name}
+                  </p>
+                  <p class="text-2xl mt-2">{week.mood}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Fun Fact Box -->
+          <div class="bg-soft-yellow rounded-2xl p-6 mt-6">
+            <p class="text-sm text-dark-brown/70 italic">
+              "Jonte äter denna ost varje dag denna vecka. Han bakar den, steker den, och äter den helt enkelt rå. Han är en konstnär."
+            </p>
+            <p class="text-xs text-dark-brown/60 mt-4">
+              — Okänd källa
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section-padding bg-dark-green text-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-display font-bold mb-6">
+        Vill du prova denna veckas ost?
+      </h2>
+      <p class="text-lg text-cream/90 mb-8 max-w-2xl mx-auto">
+        Kontakta Jonte direkt för att reservera en portion av denna veckas utvalda ost.
+      </p>
+      <a href="/kontakt" class="inline-block bg-cream text-dark-green px-8 py-4 rounded-lg font-bold hover:bg-soft-yellow transition-colors">
+        Reservera nu
+      </a>
+    </div>
+  </section>
+</MainLayout>

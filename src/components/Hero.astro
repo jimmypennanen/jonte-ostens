@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  cta?: {
+    text: string;
+    href: string;
+  };
+}
+
+const { title, subtitle, cta } = Astro.props;
+---
+
+<section class="bg-gradient-to-br from-soft-yellow via-beige to-light-green/30 py-20 md:py-32">
+  <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <div class="text-center mb-8">
+      <div class="text-6xl md:text-7xl mb-6">🧀</div>
+      <h1 class="mb-4">{title}</h1>
+      {subtitle && <p class="text-lg md:text-xl text-dark-brown/80 max-w-2xl mx-auto">{subtitle}</p>}
+    </div>
+
+    {cta && (
+      <div class="flex justify-center">
+        <a href={cta.href} class="btn-primary">
+          {cta.text}
+        </a>
+      </div>
+    )}
+  </div>
+</section>

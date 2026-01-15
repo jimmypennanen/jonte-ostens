@@ -1,0 +1,87 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Hero from '../components/Hero.astro';
+import CheeseCard from '../components/CheeseCard.astro';
+
+const cheeses = [
+  {
+    name: 'Jontes Premium Grevé 2.0',
+    description: 'Molnmjuk och rik på smak. Klassikern som gjorde allt möjligt.',
+    price: '199 kr/hg',
+    pairing: 'Knäckebröd, fruktvin, drömmar'
+  },
+  {
+    name: 'Gubbens Koppsvett Deluxe',
+    description: 'Luktar och smakar precis som namnet antyder. En äventyring.',
+    price: '249 kr/hg',
+    pairing: 'Mod, tapperhet, tvål'
+  },
+  {
+    name: 'Narkososten',
+    description: 'Förbjuden av de flesta länder. Legalt här tack vare "kärleksfrihet".',
+    price: '299 kr/hg',
+    pairing: 'Bara Jonte'
+  },
+  {
+    name: 'Smaskig Präst',
+    description: 'En soft wash som förlåter alla synder. Bokstavligt talat.',
+    price: '189 kr/hg',
+    pairing: 'Ljust vin, skrivelse till prästen'
+  },
+  {
+    name: 'Jonte\'s Forbidden Cheddar',
+    description: 'Så intensiv att Jonte inte ens får äta den själv. Det finns regler.',
+    price: '229 kr/hg',
+    pairing: 'Äppelkräm, värdighet'
+  },
+  {
+    name: 'Lactose Crisis Special',
+    description: 'För de modiga. För de villiga. För de som älskar äventyr i toaletten.',
+    price: '149 kr/hg',
+    pairing: 'Mod, äventyr, backesalvaa'
+  },
+  {
+    name: 'Midnight Västerbotten',
+    description: 'En mystisk ost som bara dyker upp ibland. Jonte säger att den "väljer honom".',
+    price: '269 kr/hg',
+    pairing: 'Ensamhet, månsken, existentiella frågor'
+  },
+  {
+    name: 'Skamvrån Brie',
+    description: 'Inte en skam att älska denna. Men Jonte skäms lite ändå.',
+    price: '179 kr/hg',
+    pairing: 'Ananas, moraliska kris'
+  }
+];
+---
+
+<MainLayout title="Produkterna">
+  <Hero
+    title="Alla ostar"
+    subtitle="Jontes kompletta samling av ostar för varje tillfälle, humör och personlighetskris"
+  />
+
+  <section class="section-padding bg-cream">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {cheeses.map(cheese => (
+          <CheeseCard {...cheese} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Info section -->
+  <section class="section-padding bg-white">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <h2 class="mb-6">Inte helt säker?</h2>
+      <p class="text-lg text-dark-brown/80 mb-8">
+        Ring Jonte direkt eller besök oss för en ostprovning. Han älskar att prata om ost.
+        Det är faktiskt det enda han vill prata om.
+      </p>
+      <a href="/kontakt" class="btn-primary">
+        Kontakta oss för provning
+      </a>
+    </div>
+  </section>
+</MainLayout>

@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-dark-brown;
+  }
+
+  h1 {
+    @apply font-display text-4xl md:text-5xl font-bold;
+  }
+
+  h2 {
+    @apply font-display text-3xl md:text-4xl font-bold;
+  }
+
+  h3 {
+    @apply font-display text-2xl font-bold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-block px-8 py-3 bg-dark-green text-cream rounded-full font-medium hover:bg-dark-brown transition-colors duration-300;
+  }
+
+  .btn-secondary {
+    @apply inline-block px-8 py-3 bg-soft-yellow text-dark-brown rounded-full font-medium hover:bg-dark-green hover:text-cream transition-colors duration-300;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6;
+  }
+
+  .section-padding {
+    @apply py-12 md:py-20;
+  }
+}

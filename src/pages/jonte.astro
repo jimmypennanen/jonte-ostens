@@ -1,0 +1,110 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const timeline = [
+  { year: '1987', event: 'Jonte föds (eller dyker upp från någonstans)' },
+  { year: '2003', event: 'Jonte äter ost för första gången. Livet ändras för alltid.' },
+  { year: '2008', event: 'Jonte börjar experimentera med att göra egen ost i källaren' },
+  { year: '2015', event: 'Första officiella ostprovningen. 47 personer närvarar.' },
+  { year: '2018', event: 'Jontes Ostbutik öppnar officiellt. Media kallar det "Det bästa som hänt Uppsala"' },
+  { year: '2024', event: 'Jonte är nu en legend. Nästan. Lite.' }
+];
+
+const facts = [
+  'Jonte äter ungefär 2 kg ost per dag',
+  'Han har gjort ett löfte att aldrig äta annan mat igen (ost är mat)',
+  'Jonte kan smaka skillnad mellan ostar från två olika dagar',
+  'Han talar flytande ostiska (en språk vi inte helt förstår)',
+  'Jonte sover bara 3 timmar per natt. Resten av tiden tänker han på ost',
+  'Hans dröm är att smälta ihop all världens ost till en superost'
+];
+---
+
+<MainLayout title="Jonte">
+  <Hero
+    title="Legenden om Jonte Osten"
+    subtitle="Från vanlig människa till ostprofet — En sann historia (inte helt)"
+  />
+
+  <!-- Origin Story -->
+  <section class="section-padding bg-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8">
+      <h2 class="mb-8">Hur allt började</h2>
+      <div class="card mb-8">
+        <p class="text-dark-brown/80 leading-relaxed mb-4">
+          Det var en helt vanlig dag när Jonte, en helt okänd person som jobbade på en helt okänd kontorsplats, tog
+          en tugga av en hårdost han hittat i pausrummet.
+        </p>
+        <p class="text-dark-brown/80 leading-relaxed mb-4">
+          Den minutens upplysning förändrade allt. Hans karriär, hans relationer, hans mat - allt försvann bakom en
+          dörr märkt "OST".
+        </p>
+        <p class="text-dark-brown/80 leading-relaxed">
+          Nu, många år senare, är Jonte något helt annat. Han är en man med en vision. En man med ett syfte.
+          En man som bara älskar ost.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section-padding bg-white">
+    <div class="max-w-4xl mx-auto px-6 md:px-8">
+      <h2 class="mb-12">Jontes ostresa</h2>
+      <div class="space-y-6">
+        {timeline.map(item => (
+          <div class="flex gap-6 items-start">
+            <div class="flex-shrink-0">
+              <div class="flex items-center justify-center h-12 w-12 rounded-full bg-dark-green text-cream font-bold text-sm">
+                {item.year.substring(2)}
+              </div>
+            </div>
+            <div class="flex-grow pt-1">
+              <p class="font-medium text-dark-brown">{item.year}</p>
+              <p class="text-dark-brown/70 mt-1">{item.event}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <section class="section-padding bg-dark-green text-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <blockquote class="text-2xl md:text-3xl font-display italic mb-6">
+        "Ost är inte en produkt. Det är en resa."
+      </blockquote>
+      <p class="text-cream/80">— Jonte</p>
+    </div>
+  </section>
+
+  <!-- Fun Facts -->
+  <section class="section-padding bg-cream">
+    <div class="max-w-4xl mx-auto px-6 md:px-8">
+      <h2 class="mb-12">Roliga fakta om Jonte</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        {facts.map(fact => (
+          <div class="card">
+            <p class="text-dark-brown/80">✓ {fact}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-soft-yellow">
+    <div class="max-w-4xl mx-auto px-6 md:px-8 text-center">
+      <h2 class="mb-6">Vill du träffa Jonte?</h2>
+      <p class="text-dark-brown/80 mb-8">
+        Jonte är inte alltid tillgänglig, men när han är det kan du ofta hitta honom på ostbutiken.
+        Han gillar besökare. Speciellt om de vill prata om ost.
+      </p>
+      <a href="/kontakt" class="btn-primary">
+        Boka tid
+      </a>
+    </div>
+  </section>
+</MainLayout>

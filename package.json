@@ -1,0 +1,19 @@
+{
+  "name": "jonte-osten",
+  "version": "1.0.0",
+  "description": "Jontes Ostbutik - A humorous cheese shop tribute",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.16.9"
+  },
+  "devDependencies": {
+    "@astrojs/tailwind": "^5.1.2",
+    "tailwindcss": "^3.4.1"
+  }
+}
