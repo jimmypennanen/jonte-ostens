@@ -1,6 +1,8 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import Hero from '../components/Hero.astro';
+
+export const prerender = false;
 ---
 
 <MainLayout title="Kontakt">
@@ -21,7 +23,17 @@ import Hero from '../components/Hero.astro';
             Fyll i formuläret nedan och vi kontaktar dig så snart Jonte är klar med sin ost.
           </p>
 
-          <form class="space-y-6">
+          <form id="contact-form" class="space-y-6">
+            <!-- Success Message -->
+            <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+              <p>Tack för ditt meddelande! Vi kontaktar dig så snart Jonte är klar med sin ost.</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+              <p id="error-text"></p>
+            </div>
+
             <!-- Name Field -->
             <div>
               <label for="name" class="block text-sm font-semibold text-dark-brown mb-2">
@@ -88,6 +100,7 @@ import Hero from '../components/Hero.astro';
             <!-- Submit Button -->
             <button
               type="submit"
+              id="submit-btn"
               class="w-full bg-dark-green text-cream px-6 py-4 rounded-lg font-bold text-lg hover:bg-dark-green/90 transition-colors"
             >
               Skicka meddelande
@@ -97,6 +110,61 @@ import Hero from '../components/Hero.astro';
           <p class="text-xs text-dark-brown/50 mt-4 text-center">
             Vi svarar normalt inom 24 timmar (eller när Jonte mår bra)
           </p>
+
+          <script>
+            const form = document.getElementById('contact-form') as HTMLFormElement;
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+            form?.addEventListener('submit', async (e: Event) => {
+              e.preventDefault();
+
+              // Hide previous messages
+              successMessage?.classList.add('hidden');
+              errorMessage?.classList.add('hidden');
+
+              // Disable submit button
+              submitBtn.disabled = true;
+              const originalText = submitBtn.textContent;
+              submitBtn.textContent = 'Skickar...';
+
+              const formData = new FormData(form);
+              const name = formData.get('name') as string;
+              const email = formData.get('email') as string;
+              const subject = formData.get('subject') as string;
+              const message = formData.get('message') as string;
+
+              try {
+                const response = await fetch('/api/contact/submit', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ name, email, subject, message }),
+                });
+
+                if (response.ok) {
+                  // Show success message
+                  successMessage?.classList.remove('hidden');
+                  form.reset();
+                } else {
+                  const error = await response.json();
+                  errorText!.textContent = error.error || 'Ett fel uppstod vid sändning av meddelandet';
+                  errorMessage!.classList.remove('hidden');
+                }
+              } catch (error) {
+                errorText!.textContent = 'Ett fel uppstod. Försök igen senare.';
+                errorMessage!.classList.remove('hidden');
+                console.error('Form error:', error);
+              } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+              }
+            });
+          </script>
         </div>
 
         <!-- Contact Info -->

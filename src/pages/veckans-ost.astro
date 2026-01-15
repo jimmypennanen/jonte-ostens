@@ -1,32 +1,32 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import Hero from '../components/Hero.astro';
+import { getCurrentWeeklyCheese, getWeek, getPreviousWeeks } from '../db/index';
 
-// Get current week number
-function getWeek(date: Date): number {
-  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+export const prerender = false;
+
+const currentWeeklyCheese = getCurrentWeeklyCheese();
+const currentWeek = getWeek(new Date());
+const previousWeeksFromDb = getPreviousWeeks();
+
+if (!currentWeeklyCheese) {
+  return Astro.redirect('/');
 }
 
-const currentWeek = getWeek(new Date());
+// Parse dont_pair_with JSON
+const dontPairWith = JSON.parse(currentWeeklyCheese.dont_pair_with_json || '[]');
 
 const currentCheese = {
-  name: 'Midnight Västerbotten',
-  description: 'En sammansmältning av midnattens mysterium och västerbottens rika traditioner. Denna ost är så intensiv att Jonte behövde ta en veckas paus efter första tuggan för att återhämta sig.',
-  whySelected: 'Jonte valde denna ost denna vecka för att den helt enkelt är det närmaste han kommer att hitta till perfektion i ostform. Enligt honom är detta det enda han behöver äta för att överleva de kommande 7 dagarna.',
-  howToEat: 'Serveras bäst på rumtemperatur med ett glas vatten i närheten. Skär i tunna skivor och njut långsamt. Jonte rekommenderar att äta denna ost medan du stirrar ut genom ett mörkt fönster och funderar på ostens djupa mening.',
-  dontPairWith: [
-    'Något sött (sockret försöker dölja ostens sanna väsen)',
-    'Annat än vatten att dricka (konkurrerar om uppmärksamhet)',
-    'Musik högre än viskningar (störar meditatönen)',
-    'Andra människor närvarande (de förstår inte)'
-  ],
-  previousWeeks: [
-    { week: 'Vecka 1', name: 'Grevé 2.0', mood: '🚀' },
-    { week: 'Vecka 2', name: 'Koppsvett', mood: '💪' },
-    { week: 'Vecka 3', name: 'Narkososten', mood: '😴' }
-  ]
+  name: currentWeeklyCheese.cheese_name,
+  description: currentWeeklyCheese.description,
+  whySelected: currentWeeklyCheese.why_selected,
+  howToEat: currentWeeklyCheese.how_to_eat,
+  dontPairWith: dontPairWith,
+  previousWeeks: previousWeeksFromDb.slice(0, 10).map(w => ({
+    week: `Vecka ${w.week_number}`,
+    name: w.cheese_name,
+    mood: w.mood_emoji
+  }))
 };
 ---
 

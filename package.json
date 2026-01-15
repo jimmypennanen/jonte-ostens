@@ -7,13 +7,20 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
-    "astro": "^5.16.9"
+    "@astrojs/node": "^9.5.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "astro": "^5.16.9",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.6.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^5.1.2",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0"
   }
 }

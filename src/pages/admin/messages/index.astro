@@ -1,0 +1,135 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getContactMessages } from '../../../db/index';
+
+export const prerender = false;
+
+const messages = getContactMessages();
+---
+
+<AdminLayout title="Kontaktmeddelanden" currentPath="/admin/messages">
+  <div>
+    <h1 class="text-3xl font-display font-bold text-dark-brown mb-8">
+      Kontaktmeddelanden
+    </h1>
+
+    {messages.length === 0 ? (
+      <div class="card text-center py-12">
+        <p class="text-dark-brown/70">Inga meddelanden ännu</p>
+      </div>
+    ) : (
+      <div class="space-y-4">
+        {messages.map(msg => (
+          <div class={`card border-l-4 ${msg.is_read === 0 ? 'bg-soft-yellow/30 border-soft-yellow' : 'border-dark-brown/10'}`}>
+            <div class="flex justify-between items-start gap-4 mb-4">
+              <div class="flex-grow">
+                <h3 class="text-lg font-semibold text-dark-brown">{msg.name}</h3>
+                <p class="text-sm text-dark-brown/60">{msg.email}</p>
+                <p class="text-xs text-dark-brown/50 mt-1">
+                  {new Date(msg.created_at).toLocaleDateString('sv-SE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class={`text-xs px-2 py-1 rounded-full font-semibold ${msg.is_read === 0 ? 'bg-soft-yellow text-dark-brown' : 'bg-dark-brown/10 text-dark-brown/70'}`}>
+                  {msg.is_read === 0 ? 'Oläst' : 'Läst'}
+                </span>
+              </div>
+            </div>
+
+            <div class="mb-4 pb-4 border-b border-dark-brown/10">
+              <p class="text-sm font-semibold text-dark-brown mb-2">
+                <strong>Ämne:</strong> {msg.subject}
+              </p>
+              <p class="text-sm text-dark-brown/80 whitespace-pre-wrap">
+                {msg.message}
+              </p>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="mark-btn px-3 py-1 bg-dark-green text-cream rounded text-sm font-semibold hover:bg-dark-green/90 transition-colors"
+                data-id={msg.id}
+                data-is-read={msg.is_read}
+              >
+                {msg.is_read === 0 ? 'Markera som läst' : 'Markera som oläst'}
+              </button>
+              <button
+                class="delete-btn px-3 py-1 bg-red-500 text-white rounded text-sm font-semibold hover:bg-red-600 transition-colors"
+                data-id={msg.id}
+              >
+                Ta bort
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <script>
+    // Handle mark as read/unread
+    document.querySelectorAll('.mark-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const button = e.target as HTMLButtonElement;
+        const id = button.dataset.id;
+        const isRead = button.dataset.isRead === '0';
+
+        if (!id) return;
+
+        try {
+          const response = await fetch(`/api/messages/${id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isRead }),
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert('Fel vid uppdatering av meddelande');
+          }
+        } catch (error) {
+          console.error('Update error:', error);
+          alert('Ett fel uppstod');
+        }
+      });
+    });
+
+    // Handle delete
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const button = e.target as HTMLButtonElement;
+        const id = button.dataset.id;
+
+        if (!id) return;
+
+        if (!confirm('Är du säker på att du vill radera detta meddelande?')) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/messages/${id}`, {
+            method: 'DELETE'
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert('Fel vid borttagning av meddelande');
+          }
+        } catch (error) {
+          console.error('Delete error:', error);
+          alert('Ett fel uppstod');
+        }
+      });
+    });
+  </script>
+</AdminLayout>

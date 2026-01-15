@@ -3,45 +3,14 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Hero from '../components/Hero.astro';
 import CheeseCard from '../components/CheeseCard.astro';
 import Testimonial from '../components/Testimonial.astro';
+import { getCheeses, getApprovedTestimonials, getCurrentWeeklyCheese } from '../db/index';
 
-const featuredCheeses = [
-  {
-    name: 'Jontes Premium Grevé 2.0',
-    description: 'Den klassikern som startade det hela. Molnmjuk, rik på smak, och absolut det bästa Jonte någonsin gjort.',
-    price: '199 kr/hg',
-    pairing: 'Knäckebröd, fruktvin, nostalgi'
-  },
-  {
-    name: 'Gubbens Koppsvett Deluxe',
-    description: 'En bold ost som luktar precis som Jonte efter en lång dag på ostboden. En erfarenhet.',
-    price: '249 kr/hg',
-    pairing: 'Bara Jonte vet'
-  },
-  {
-    name: 'Smaskig Präst',
-    description: 'En soft wash som Jonte säger är "läkare för själen". Vi frågade inte vidare.',
-    price: '189 kr/hg',
-    pairing: 'Ljust vin, meditation'
-  }
-];
+export const prerender = false;
 
-const testimonials = [
-  {
-    quote: 'Jag har inte sett Jonte utan ost på 12 år.',
-    author: 'Karin',
-    role: 'Långtidskund'
-  },
-  {
-    quote: 'Jag förlorade mitt jobb men hittade meningen med livet i Jontes Grevé 2.0.',
-    author: 'Stefan',
-    role: 'Yrkesförändring'
-  },
-  {
-    quote: 'Denna ost fick mig att gifta om mig. Två gånger.',
-    author: 'Annika',
-    role: 'Livsförändrare'
-  }
-];
+const allCheeses = getCheeses();
+const featuredCheeses = allCheeses.slice(0, 3);
+const testimonials = getApprovedTestimonials();
+const currentWeeklyCheese = getCurrentWeeklyCheese();
 ---
 
 <MainLayout title="Hem">
@@ -55,19 +24,35 @@ const testimonials = [
   <!-- Veckans ost teaser -->
   <section class="section-padding bg-white">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
-      <div class="card bg-gradient-to-br from-soft-yellow/50 to-light-green/50 border border-soft-yellow">
-        <div class="md:flex items-center justify-between">
-          <div>
-            <h2 class="mb-2">🌟 Veckans Ost</h2>
-            <p class="text-dark-brown/80 mb-4 md:mb-0">
-              <strong>Midnight Västerbotten</strong> — En mystisk ost som Jonte bara hittade. Helt magisk.
-            </p>
+      {currentWeeklyCheese ? (
+        <div class="card bg-gradient-to-br from-soft-yellow/50 to-light-green/50 border border-soft-yellow">
+          <div class="md:flex items-center justify-between">
+            <div>
+              <h2 class="mb-2">🌟 Veckans Ost</h2>
+              <p class="text-dark-brown/80 mb-4 md:mb-0">
+                <strong>{currentWeeklyCheese.cheese_name}</strong> — {currentWeeklyCheese.description}
+              </p>
+            </div>
+            <a href="/veckans-ost" class="btn-secondary whitespace-nowrap">
+              Läs mer
+            </a>
           </div>
-          <a href="/veckans-ost" class="btn-secondary whitespace-nowrap">
-            Läs mer
-          </a>
         </div>
-      </div>
+      ) : (
+        <div class="card bg-gradient-to-br from-soft-yellow/50 to-light-green/50 border border-soft-yellow">
+          <div class="md:flex items-center justify-between">
+            <div>
+              <h2 class="mb-2">🌟 Veckans Ost</h2>
+              <p class="text-dark-brown/80 mb-4 md:mb-0">
+                Ingen ost vald denna vecka. Kontakta Jonte för att välja denna veckas specialitet.
+              </p>
+            </div>
+            <a href="/veckans-ost" class="btn-secondary whitespace-nowrap">
+              Läs mer
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   </section>
 

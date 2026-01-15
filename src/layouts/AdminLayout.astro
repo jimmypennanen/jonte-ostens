@@ -1,0 +1,131 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  currentPath?: string;
+}
+
+const { title, currentPath = '' } = Astro.props;
+const { user } = Astro.locals;
+---
+
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Admin | Jontes Ostbutik</title>
+    <meta name="description" content="Admin panel - Jontes Ostbutik" />
+  </head>
+  <body class="flex flex-col min-h-screen bg-cream">
+    <Header currentPath={currentPath} />
+
+    <div class="flex flex-grow">
+      <!-- Sidebar Navigation -->
+      <aside class="w-64 bg-dark-green text-cream shadow-lg sticky top-0 h-screen overflow-y-auto">
+        <div class="p-6 border-b border-cream/20">
+          <h2 class="text-2xl font-display font-bold">Admin Panel</h2>
+          <p class="text-sm text-cream/70 mt-2">Hej {user?.username || 'Admin'}</p>
+        </div>
+
+        <nav class="p-4">
+          <ul class="space-y-2">
+            <li>
+              <a
+                href="/admin"
+                class={`block px-4 py-3 rounded-lg transition-colors ${
+                  currentPath === '/admin' || currentPath === '/admin/'
+                    ? 'bg-cream text-dark-green font-semibold'
+                    : 'hover:bg-cream/20'
+                }`}
+              >
+                📊 Dashboard
+              </a>
+            </li>
+            <li>
+              <a
+                href="/admin/cheeses"
+                class={`block px-4 py-3 rounded-lg transition-colors ${
+                  currentPath.startsWith('/admin/cheeses')
+                    ? 'bg-cream text-dark-green font-semibold'
+                    : 'hover:bg-cream/20'
+                }`}
+              >
+                🧀 Ostar
+              </a>
+            </li>
+            <li>
+              <a
+                href="/admin/weekly"
+                class={`block px-4 py-3 rounded-lg transition-colors ${
+                  currentPath.startsWith('/admin/weekly')
+                    ? 'bg-cream text-dark-green font-semibold'
+                    : 'hover:bg-cream/20'
+                }`}
+              >
+                ⭐ Veckans Ost
+              </a>
+            </li>
+            <li>
+              <a
+                href="/admin/messages"
+                class={`block px-4 py-3 rounded-lg transition-colors ${
+                  currentPath.startsWith('/admin/messages')
+                    ? 'bg-cream text-dark-green font-semibold'
+                    : 'hover:bg-cream/20'
+                }`}
+              >
+                💬 Meddelanden
+              </a>
+            </li>
+            <li>
+              <a
+                href="/admin/testimonials"
+                class={`block px-4 py-3 rounded-lg transition-colors ${
+                  currentPath.startsWith('/admin/testimonials')
+                    ? 'bg-cream text-dark-green font-semibold'
+                    : 'hover:bg-cream/20'
+                }`}
+              >
+                ⭐ Testimonials
+              </a>
+            </li>
+
+            <li class="pt-4 mt-4 border-t border-cream/20">
+              <button
+                id="logout-btn"
+                class="w-full text-left px-4 py-3 rounded-lg hover:bg-cream/20 transition-colors flex items-center gap-2"
+              >
+                🚪 Logga ut
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-grow">
+        <div class="p-6 md:p-8 max-w-7xl">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.getElementById('logout-btn')?.addEventListener('click', async () => {
+        try {
+          const response = await fetch('/api/auth/logout', { method: 'POST' });
+          if (response.ok) {
+            window.location.href = '/admin/login';
+          }
+        } catch (error) {
+          console.error('Logout failed:', error);
+          alert('Logout failed');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+---
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { getCheese } from '../../../../db/index';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const cheeseId = parseInt(id as string, 10);
+
+const cheese = getCheese(cheeseId);
+
+if (!cheese) {
+  return Astro.redirect('/admin/cheeses');
+}
+---
+
+<AdminLayout title={`Redigera ${cheese.name}`} currentPath="/admin/cheeses">
+  <div>
+    <h1 class="text-3xl font-display font-bold text-dark-brown mb-8">
+      Redigera ost
+    </h1>
+
+    <div class="max-w-2xl">
+      <form id="cheese-form" class="card space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-semibold text-dark-brown mb-2">
+            Ostens namn *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            value={cheese.name}
+            class="w-full px-4 py-2 rounded-lg border-2 border-dark-brown/20 focus:border-dark-green focus:outline-none text-dark-brown"
+          />
+        </div>
+
+        <div>
+          <label for="price" class="block text-sm font-semibold text-dark-brown mb-2">
+            Pris *
+          </label>
+          <input
+            type="text"
+            id="price"
+            name="price"
+            required
+            value={cheese.price}
+            class="w-full px-4 py-2 rounded-lg border-2 border-dark-brown/20 focus:border-dark-green focus:outline-none text-dark-brown"
+          />
+        </div>
+
+        <div>
+          <label for="description" class="block text-sm font-semibold text-dark-brown mb-2">
+            Beskrivning *
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            required
+            rows={4}
+            class="w-full px-4 py-2 rounded-lg border-2 border-dark-brown/20 focus:border-dark-green focus:outline-none text-dark-brown resize-none"
+          >{cheese.description}</textarea>
+        </div>
+
+        <div>
+          <label for="pairing" class="block text-sm font-semibold text-dark-brown mb-2">
+            Passar till *
+          </label>
+          <input
+            type="text"
+            id="pairing"
+            name="pairing"
+            required
+            value={cheese.pairing}
+            class="w-full px-4 py-2 rounded-lg border-2 border-dark-brown/20 focus:border-dark-green focus:outline-none text-dark-brown"
+          />
+        </div>
+
+        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+          <p id="error-text"></p>
+        </div>
+
+        <div class="flex gap-4">
+          <button
+            type="submit"
+            class="flex-1 bg-dark-green text-cream px-6 py-3 rounded-lg font-bold hover:bg-dark-green/90 transition-colors"
+          >
+            Spara ändringar
+          </button>
+          <a
+            href="/admin/cheeses"
+            class="flex-1 bg-dark-brown/20 text-dark-brown px-6 py-3 rounded-lg font-bold hover:bg-dark-brown/30 transition-colors text-center"
+          >
+            Avbryt
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script define:vars={{ cheeseId }}>
+    const form = document.getElementById('cheese-form') as HTMLFormElement;
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+
+    form?.addEventListener('submit', async (e: Event) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const name = formData.get('name') as string;
+      const price = formData.get('price') as string;
+      const description = formData.get('description') as string;
+      const pairing = formData.get('pairing') as string;
+
+      try {
+        const response = await fetch(`/api/cheeses/${cheeseId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, price, description, pairing }),
+        });
+
+        if (response.ok) {
+          // Redirect to cheeses list
+          window.location.href = '/admin/cheeses';
+        } else {
+          const error = await response.json();
+          errorText!.textContent = error.error || 'Fel vid uppdatering av ost';
+          errorMessage!.classList.remove('hidden');
+        }
+      } catch (error) {
+        errorText!.textContent = 'Ett fel uppstod. Försök igen senare.';
+        errorMessage!.classList.remove('hidden');
+        console.error('Form error:', error);
+      }
+    });
+  </script>
+</AdminLayout>
