@@ -9,27 +9,28 @@ interface Props {
 const { name, description, price, pairing } = Astro.props;
 ---
 
-<div class="card">
+<div class="card hover:shadow-lg hover:scale-105 transition-all duration-300">
   <!-- Placeholder image -->
-  <div class="bg-gradient-to-br from-soft-yellow to-light-green rounded-xl h-48 mb-4 flex items-center justify-center text-4xl">
+  <div class="bg-gradient-to-br from-soft-yellow to-light-green rounded-lg h-56 mb-6 flex items-center justify-center text-6xl">
     🧀
   </div>
 
-  <h3 class="font-display text-lg font-bold text-dark-brown mb-2">
+  <h3 class="font-display text-xl font-bold text-dark-brown mb-3 leading-tight">
     {name}
   </h3>
 
-  <p class="text-sm text-dark-brown/70 mb-3 leading-relaxed">
+  <p class="text-sm text-dark-brown/60 mb-4 leading-relaxed line-clamp-3">
     {description}
   </p>
 
-  <div class="space-y-2 text-sm">
-    <div class="flex justify-between items-center border-t border-beige pt-2">
+  <div class="space-y-3 text-sm mt-4 pt-4 border-t border-soft-yellow/50">
+    <div class="flex justify-between items-center">
       <span class="font-medium text-dark-green">Pris:</span>
-      <span class="font-display text-lg font-bold text-dark-brown">{price}</span>
+      <span class="font-display text-xl font-bold text-dark-brown">{price}</span>
     </div>
     <div class="text-xs text-dark-brown/60">
-      <strong>Passar till:</strong> {pairing}
+      <strong class="block mb-1">Passar till:</strong>
+      <span class="text-dark-brown/70">{pairing}</span>
     </div>
   </div>
 </div>
