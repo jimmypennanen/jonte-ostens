@@ -10,31 +10,46 @@ const DB_PATH = path.resolve(process.cwd(), 'jonte-osten.db');
 
 console.log('Ensuring database exists at:', DB_PATH);
 
-// If database already exists, we're done
-if (fs.existsSync(DB_PATH)) {
-  console.log('Database already exists, skipping initialization');
-  process.exit(0);
-}
-
-console.log('Creating new database...');
-
 const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 
-// Read and execute schema
+// Read schema
 const schemaPath = path.resolve(__dirname, '../src/db/schema.sql');
 const schema = fs.readFileSync(schemaPath, 'utf-8');
 
-const statements = schema.split(';').filter(s => s.trim());
+// Check if tables exist
+const tableCheck = db.prepare("SELECT count(*) FROM sqlite_master WHERE type='table'").get();
 
-for (const statement of statements) {
-  try {
-    db.exec(statement);
-  } catch (error) {
-    console.error('Error executing schema statement:', error);
+if (tableCheck['count(*)'] === 0) {
+  console.log('Database is empty, initializing schema...');
+
+  const statements = schema.split(';').filter(s => s.trim());
+
+  for (const statement of statements) {
+    try {
+      db.exec(statement);
+    } catch (error) {
+      console.error('Error executing schema statement:', error);
+    }
   }
+
+  console.log('Schema initialized successfully');
+} else {
+  console.log('Database already has tables, skipping schema initialization');
 }
 
-console.log('Database created and schema initialized');
+// Check if we need to seed data
+try {
+  const cheeseCount = db.prepare('SELECT COUNT(*) as count FROM cheeses').get();
+
+  if (cheeseCount.count === 0) {
+    console.log('Database is empty, seed data will be added on first request');
+  } else {
+    console.log(`Database has ${cheeseCount.count} cheeses, data looks good`);
+  }
+} catch (error) {
+  console.warn('Could not check cheese count (tables might not exist yet):', error.message);
+}
+
 db.close();
 console.log('Database ready for build');
