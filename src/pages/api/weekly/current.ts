@@ -41,14 +41,52 @@ export const POST: APIRoute = async ({ request }) => {
       dontPairWith?: string[];
     };
 
-    const { cheeseId, description, whySelected, howToEat, dontPairWith } = body;
+    const cheeseId = body.cheeseId;
+    const description = (body.description || '').trim();
+    const whySelected = (body.whySelected || '').trim();
+    const howToEat = (body.howToEat || '').trim();
+    const dontPairWith = (body.dontPairWith || [])
+      .map(item => (item || '').trim())
+      .filter(item => item.length > 0);
 
-    // Validate input
-    if (!cheeseId || !description || !whySelected || !howToEat || !dontPairWith) {
+    // Validate required fields
+    if (!cheeseId || !description || !whySelected || !howToEat || dontPairWith.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ error: 'Alla fält är obligatoriska' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Validate field lengths
+    if (description.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Beskrivningen får max vara 1000 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (whySelected.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Förklaringen får max vara 1000 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (howToEat.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Instruktionerna får max vara 1000 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate pairing items
+    for (const item of dontPairWith) {
+      if (item.length > 100) {
+        return new Response(
+          JSON.stringify({ error: 'Varje pairing-objekt får max vara 100 tecken' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     // Verify cheese exists

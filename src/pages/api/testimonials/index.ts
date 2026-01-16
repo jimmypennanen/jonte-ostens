@@ -26,12 +26,37 @@ export const POST: APIRoute = async ({ request }) => {
       role?: string;
     };
 
-    const { quote, author, role } = body;
+    // Trim and validate input
+    const quote = (body.quote || '').trim();
+    const author = (body.author || '').trim();
+    const role = (body.role || '').trim();
 
-    // Validate input
+    // Validate required fields
     if (!quote || !author || !role) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ error: 'Alla fält är obligatoriska' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate field lengths
+    if (quote.length > 500) {
+      return new Response(
+        JSON.stringify({ error: 'Citatet får max vara 500 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (author.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Författarens namn får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (role.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Rollen får max vara 100 tecken' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }

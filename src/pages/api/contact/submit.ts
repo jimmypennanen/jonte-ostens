@@ -10,12 +10,45 @@ export const POST: APIRoute = async ({ request }) => {
       message?: string;
     };
 
-    const { name, email, subject, message } = body;
+    // Trim and validate input
+    const name = (body.name || '').trim();
+    const email = (body.email || '').trim().toLowerCase();
+    const subject = (body.subject || '').trim();
+    const message = (body.message || '').trim();
 
-    // Validate input
+    // Validate required fields
     if (!name || !email || !subject || !message) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ error: 'Alla fält är obligatoriska' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate field lengths
+    if (name.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Namn får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (email.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'E-post får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (subject.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Ämne får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: 'Meddelande får max vara 5000 tecken' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -24,7 +57,7 @@ export const POST: APIRoute = async ({ request }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid email format' }),
+        JSON.stringify({ error: 'Ogiltig e-postadress' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }

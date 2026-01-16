@@ -26,12 +26,45 @@ export const POST: APIRoute = async ({ request }) => {
       pairing?: string;
     };
 
-    const { name, description, price, pairing } = body;
+    // Trim and validate input
+    const name = (body.name || '').trim();
+    const description = (body.description || '').trim();
+    const price = (body.price || '').trim();
+    const pairing = (body.pairing || '').trim();
 
-    // Validate input
+    // Validate required fields
     if (!name || !description || !price || !pairing) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ error: 'Alla fält är obligatoriska' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate field lengths
+    if (name.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Ostens namn får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (description.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Beskrivningen får max vara 1000 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (price.length > 50) {
+      return new Response(
+        JSON.stringify({ error: 'Priset får max vara 50 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (pairing.length > 200) {
+      return new Response(
+        JSON.stringify({ error: 'Pairing får max vara 200 tecken' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
