@@ -5,12 +5,30 @@ import { getSessionExpiry } from '../../../lib/auth';
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     const body = await request.json() as { username?: string; password?: string };
-    const { username, password } = body;
+
+    // Trim and validate input
+    const username = (body.username || '').trim();
+    const password = body.password || '';
 
     // Validate input
     if (!username || !password) {
       return new Response(
-        JSON.stringify({ error: 'Username and password are required' }),
+        JSON.stringify({ error: 'Användarnamn och lösenord krävs' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate field lengths
+    if (username.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Användarnamn får max vara 100 tecken' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (password.length > 200) {
+      return new Response(
+        JSON.stringify({ error: 'Lösenord får max vara 200 tecken' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -20,7 +38,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     if (!result) {
       return new Response(
-        JSON.stringify({ error: 'Invalid credentials' }),
+        JSON.stringify({ error: 'Felaktiga inloggningsuppgifter' }),
         { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }

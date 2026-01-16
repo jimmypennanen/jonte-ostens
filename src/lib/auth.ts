@@ -33,7 +33,23 @@ export async function createSession(userId: number): Promise<string> {
 }
 
 export function validateSession(token: string) {
-  return getSessionFromDb(token);
+  const session = getSessionFromDb(token);
+
+  // Check if session exists and hasn't expired
+  if (!session) {
+    return null;
+  }
+
+  const expiresAt = new Date(session.expires_at);
+  const now = new Date();
+
+  if (now > expiresAt) {
+    // Session has expired, delete it
+    deleteSessionFromDb(token);
+    return null;
+  }
+
+  return session;
 }
 
 export function deleteSession(token: string) {
