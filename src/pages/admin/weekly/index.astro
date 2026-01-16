@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Toast from '../../../components/Toast.astro';
 import { getCheeses, getCurrentWeeklyCheese, getWeek } from '../../../db/index';
 
 export const prerender = false;
@@ -16,6 +17,7 @@ const dontPairWith = currentWeeklyCheese
 ---
 
 <AdminLayout title="Veckans Ost" currentPath="/admin/weekly">
+  <Toast />
   <div>
     <h1 class="text-3xl font-display font-bold text-dark-brown mb-8">
       Veckans Ost
@@ -157,10 +159,6 @@ const dontPairWith = currentWeeklyCheese
             ></textarea>
           </div>
 
-          <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
-            <p id="error-text"></p>
-          </div>
-
           <button
             type="submit"
             class="w-full bg-dark-green text-cream px-6 py-3 rounded-lg font-bold hover:bg-dark-green/90 transition-colors"
@@ -174,8 +172,6 @@ const dontPairWith = currentWeeklyCheese
 
   <script>
     const form = document.getElementById('weekly-form') as HTMLFormElement;
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
 
     form?.addEventListener('submit', async (e: Event) => {
       e.preventDefault();
@@ -194,8 +190,7 @@ const dontPairWith = currentWeeklyCheese
         .filter(line => line.length > 0);
 
       if (dontPairWith.length === 0) {
-        errorText!.textContent = 'Du måste lägga till minst en sak att paira med';
-        errorMessage!.classList.remove('hidden');
+        (window as any).showToast('Du måste lägga till minst en sak att paira med', { type: 'error' });
         return;
       }
 
@@ -215,17 +210,15 @@ const dontPairWith = currentWeeklyCheese
         });
 
         if (response.ok) {
-          // Reload page
-          window.location.reload();
+          (window as any).showToast('Veckans ost uppdaterad! 👋', { type: 'success' });
+          setTimeout(() => window.location.reload(), 1500);
         } else {
           const error = await response.json();
-          errorText!.textContent = error.error || 'Fel vid uppdatering';
-          errorMessage!.classList.remove('hidden');
+          (window as any).showToast(error.error || 'Fel vid uppdatering', { type: 'error' });
         }
       } catch (error) {
-        errorText!.textContent = 'Ett fel uppstod. Försök igen senare.';
-        errorMessage!.classList.remove('hidden');
-        console.error('Form error:', error);
+        (window as any).showToast('Ett fel uppstod. Försök igen senare.', { type: 'error' });
+        console.error('Form error:', error as Error);
       }
     });
   </script>

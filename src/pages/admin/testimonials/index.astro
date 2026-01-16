@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Toast from '../../../components/Toast.astro';
 import { getAllTestimonials } from '../../../db/index';
 
 export const prerender = false;
@@ -8,6 +9,7 @@ const testimonials = getAllTestimonials();
 ---
 
 <AdminLayout title="Testimonials" currentPath="/admin/testimonials">
+  <Toast />
   <div>
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-3xl font-display font-bold text-dark-brown">
@@ -169,13 +171,15 @@ const testimonials = getAllTestimonials();
         });
 
         if (response.ok) {
-          window.location.reload();
+          (window as any).showToast('Testimonial tillagd! 👋', { type: 'success' });
+          setTimeout(() => window.location.reload(), 1500);
         } else {
-          alert('Fel vid skapande av testimonial');
+          const error = await response.json();
+          (window as any).showToast(error.error || 'Fel vid skapande av testimonial', { type: 'error' });
         }
       } catch (error) {
-        console.error('Create error:', error);
-        alert('Ett fel uppstod');
+        console.error('Create error:', error as Error);
+        (window as any).showToast('Ett fel uppstod', { type: 'error' });
       }
     });
 
@@ -198,13 +202,16 @@ const testimonials = getAllTestimonials();
           });
 
           if (response.ok) {
-            window.location.reload();
+            const message = isApproved ? 'Testimonial godkänd! 👋' : 'Godkännande ångrat! 👋';
+            (window as any).showToast(message, { type: 'success' });
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert('Fel vid uppdatering av testimonial');
+            const error = await response.json();
+            (window as any).showToast(error.error || 'Fel vid uppdatering av testimonial', { type: 'error' });
           }
         } catch (error) {
-          console.error('Update error:', error);
-          alert('Ett fel uppstod');
+          console.error('Update error:', error as Error);
+          (window as any).showToast('Ett fel uppstod', { type: 'error' });
         }
       });
     });
@@ -227,13 +234,15 @@ const testimonials = getAllTestimonials();
           });
 
           if (response.ok) {
-            window.location.reload();
+            (window as any).showToast('Testimonial borttagen! 👋', { type: 'success' });
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert('Fel vid borttagning av testimonial');
+            const error = await response.json();
+            (window as any).showToast(error.error || 'Fel vid borttagning av testimonial', { type: 'error' });
           }
         } catch (error) {
-          console.error('Delete error:', error);
-          alert('Ett fel uppstod');
+          console.error('Delete error:', error as Error);
+          (window as any).showToast('Ett fel uppstod', { type: 'error' });
         }
       });
     });
