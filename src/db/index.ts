@@ -6,7 +6,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_PATH = path.resolve(process.cwd(), 'jonte-osten.db');
+// Use /tmp on Vercel (serverless), otherwise use current working directory
+const DB_PATH = process.env.VERCEL
+  ? path.join('/tmp', 'jonte-osten.db')
+  : path.resolve(process.cwd(), 'jonte-osten.db');
 
 let db: Database.Database | null = null;
 
