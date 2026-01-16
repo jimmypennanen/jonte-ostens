@@ -1,10 +1,12 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Toast from '../../../components/Toast.astro';
 
 export const prerender = false;
 ---
 
 <AdminLayout title="Lägg till ny ost" currentPath="/admin/cheeses">
+  <Toast />
   <div>
     <h1 class="text-3xl font-display font-bold text-dark-brown mb-8">
       Lägg till ny ost
@@ -68,10 +70,6 @@ export const prerender = false;
           />
         </div>
 
-        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
-          <p id="error-text"></p>
-        </div>
-
         <div class="flex gap-4">
           <button
             type="submit"
@@ -92,8 +90,6 @@ export const prerender = false;
 
   <script>
     const form = document.getElementById('cheese-form') as HTMLFormElement;
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
 
     form?.addEventListener('submit', async (e: Event) => {
       e.preventDefault();
@@ -114,16 +110,14 @@ export const prerender = false;
         });
 
         if (response.ok) {
-          // Redirect to cheeses list
-          window.location.href = '/admin/cheeses';
+          (window as any).showToast('Ost tillagd! 👋', { type: 'success' });
+          setTimeout(() => window.location.href = '/admin/cheeses', 1500);
         } else {
           const error = await response.json();
-          errorText!.textContent = error.error || 'Fel vid skapande av ost';
-          errorMessage!.classList.remove('hidden');
+          (window as any).showToast(error.error || 'Fel vid skapande av ost', { type: 'error' });
         }
       } catch (error) {
-        errorText!.textContent = 'Ett fel uppstod. Försök igen senare.';
-        errorMessage!.classList.remove('hidden');
+        (window as any).showToast('Ett fel uppstod. Försök igen senare.', { type: 'error' });
         console.error('Form error:', error);
       }
     });

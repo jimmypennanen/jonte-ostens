@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import Toast from '../../../components/Toast.astro';
 import { getCheeses } from '../../../db/index';
 
 export const prerender = false;
@@ -8,6 +9,7 @@ const cheeses = getCheeses();
 ---
 
 <AdminLayout title="Hantera Ostar" currentPath="/admin/cheeses">
+  <Toast />
   <div>
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-3xl font-display font-bold text-dark-brown">
@@ -93,14 +95,15 @@ const cheeses = getCheeses();
           });
 
           if (response.ok) {
-            // Reload page
-            window.location.reload();
+            (window as any).showToast('Ost borttagen! 👋', { type: 'success' });
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert('Fel vid borttagning av ost');
+            const error = await response.json();
+            (window as any).showToast(error.error || 'Fel vid borttagning av ost', { type: 'error' });
           }
         } catch (error) {
           console.error('Delete error:', error);
-          alert('Ett fel uppstod');
+          (window as any).showToast('Ett fel uppstod', { type: 'error' });
         }
       });
     });

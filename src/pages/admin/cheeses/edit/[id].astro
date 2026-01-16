@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import Toast from '../../../../components/Toast.astro';
 import { getCheese } from '../../../../db/index';
 
 export const prerender = false;
@@ -15,6 +16,7 @@ if (!cheese) {
 ---
 
 <AdminLayout title={`Redigera ${cheese.name}`} currentPath="/admin/cheeses">
+  <Toast />
   <div>
     <h1 class="text-3xl font-display font-bold text-dark-brown mb-8">
       Redigera ost
@@ -77,10 +79,6 @@ if (!cheese) {
           />
         </div>
 
-        <div id="error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
-          <p id="error-text"></p>
-        </div>
-
         <div class="flex gap-4">
           <button
             type="submit"
@@ -101,8 +99,6 @@ if (!cheese) {
 
   <script define:vars={{ cheeseId }}>
     const form = document.getElementById('cheese-form') as HTMLFormElement;
-    const errorMessage = document.getElementById('error-message');
-    const errorText = document.getElementById('error-text');
 
     form?.addEventListener('submit', async (e: Event) => {
       e.preventDefault();
@@ -123,17 +119,15 @@ if (!cheese) {
         });
 
         if (response.ok) {
-          // Redirect to cheeses list
-          window.location.href = '/admin/cheeses';
+          (window as any).showToast('Ost uppdaterad! 👋', { type: 'success' });
+          setTimeout(() => window.location.href = '/admin/cheeses', 1500);
         } else {
           const error = await response.json();
-          errorText!.textContent = error.error || 'Fel vid uppdatering av ost';
-          errorMessage!.classList.remove('hidden');
+          (window as any).showToast(error.error || 'Fel vid uppdatering av ost', { type: 'error' });
         }
       } catch (error) {
-        errorText!.textContent = 'Ett fel uppstod. Försök igen senare.';
-        errorMessage!.classList.remove('hidden');
-        console.error('Form error:', error);
+        (window as any).showToast('Ett fel uppstod. Försök igen senare.', { type: 'error' });
+        console.error('Form error:', error as Error);
       }
     });
   </script>
