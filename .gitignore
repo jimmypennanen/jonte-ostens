@@ -1,5 +1,4 @@
-# Database
-jonte-osten.db
+# Database WAL files (but keep main db for Vercel)
 jonte-osten.db-shm
 jonte-osten.db-wal
 
@@ -39,4 +38,3 @@ dist/
 
 *.db-shm
 *.db-wal
-*.db
