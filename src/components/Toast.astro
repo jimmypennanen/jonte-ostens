@@ -1,0 +1,87 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id = 'toast-container' } = Astro.props;
+---
+
+<div id={id} class="fixed top-6 right-6 z-50 flex flex-col gap-3 max-w-sm"></div>
+
+<script>
+  interface ToastOptions {
+    type?: 'success' | 'error';
+    duration?: number;
+  }
+
+  export function showToast(message: string, options: ToastOptions = {}) {
+    const { type = 'success', duration = 3000 } = options;
+    const container = document.getElementById('toast-container');
+
+    if (!container) return;
+
+    // Create toast element
+    const toast = document.createElement('div');
+    const toastId = `toast-${Date.now()}`;
+    toast.id = toastId;
+
+    // Base styles
+    const baseClass = 'px-4 py-3 rounded-lg font-medium text-sm transition-all duration-300 animate-slide-in';
+
+    // Type-specific styles
+    let typeClass = '';
+    if (type === 'success') {
+      typeClass = 'bg-dark-green text-cream';
+    } else if (type === 'error') {
+      typeClass = 'bg-red-100 border-l-4 border-red-500 text-red-700';
+    }
+
+    toast.className = `${baseClass} ${typeClass}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+      toast.classList.add('animate-slide-out');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }, duration);
+  }
+
+  // Make it globally available
+  (window as any).showToast = showToast;
+</script>
+
+<style>
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+
+  :global(.animate-slide-in) {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  :global(.animate-slide-out) {
+    animation: slideOut 0.3s ease-out;
+  }
+</style>
