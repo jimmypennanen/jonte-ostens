@@ -117,8 +117,185 @@ export function initDatabase() {
       // Silently ignore errors (e.g., table already exists)
     }
   }
+
+  // Seed demo data if tables are empty (idempotent - only runs once per fresh database)
+  seedDatabaseIfEmpty(database);
 }
 
+function seedDatabaseIfEmpty(database: Database.Database) {
+  try {
+    // Check if cheeses table is empty
+    const cheeseCount = (database.prepare('SELECT COUNT(*) as count FROM cheeses').get() as { count: number }).count;
+
+    if (cheeseCount === 0) {
+      // Seed all demo data
+      seedCheeses(database);
+      seedTestimonials(database);
+      seedWeeklyCheese(database);
+      seedPreviousWeeks(database);
+    }
+  } catch (error) {
+    // Silently ignore if seeding fails
+  }
+}
+
+function seedCheeses(database: Database.Database) {
+  const cheeses = [
+    {
+      name: 'Jontes Premium Grevé 2.0',
+      description: 'Molnmjuk och rik på smak. Klassikern som gjorde allt möjligt.',
+      price: '199 kr/hg',
+      pairing: 'Knäckebröd, fruktvin, drömmar'
+    },
+    {
+      name: 'Gubbens Koppsvett Deluxe',
+      description: 'Luktar och smakar precis som namnet antyder. En äventyring.',
+      price: '249 kr/hg',
+      pairing: 'Mod, tapperhet, tvål'
+    },
+    {
+      name: 'Narkososten',
+      description: 'Förbjuden av de flesta länder. Legalt här tack vare "kärleksfrihet".',
+      price: '299 kr/hg',
+      pairing: 'Bara Jonte'
+    },
+    {
+      name: 'Smaskig Präst',
+      description: 'En soft wash som förlåter alla synder. Bokstavligt talat.',
+      price: '189 kr/hg',
+      pairing: 'Ljust vin, skrivelse till prästen'
+    },
+    {
+      name: 'Jonte\'s Forbidden Cheddar',
+      description: 'Så intensiv att Jonte inte ens får äta den själv. Det finns regler.',
+      price: '229 kr/hg',
+      pairing: 'Äppelkräm, värdighet'
+    },
+    {
+      name: 'Lactose Crisis Special',
+      description: 'För de modiga. För de villiga. För de som älskar äventyr i toaletten.',
+      price: '149 kr/hg',
+      pairing: 'Mod, äventyr, backesalva'
+    },
+    {
+      name: 'Midnight Västerbotten',
+      description: 'En mystisk ost som bara dyker upp ibland. Jonte säger att den "väljer honom".',
+      price: '269 kr/hg',
+      pairing: 'Ensamhet, månsken, existentiella frågor'
+    },
+    {
+      name: 'Skamvrån Brie',
+      description: 'Inte en skam att älska denna. Men Jonte skäms lite ändå.',
+      price: '179 kr/hg',
+      pairing: 'Ananas, moraliska kris'
+    }
+  ];
+
+  const stmt = database.prepare(`
+    INSERT INTO cheeses (name, description, price, pairing)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  for (const cheese of cheeses) {
+    try {
+      stmt.run(cheese.name, cheese.description, cheese.price, cheese.pairing);
+    } catch (error) {
+      // Silently ignore duplicate inserts
+    }
+  }
+}
+
+function seedTestimonials(database: Database.Database) {
+  const testimonials = [
+    {
+      quote: 'Jag har inte sett Jonte utan ost på 12 år.',
+      author: 'Karin',
+      role: 'Långtidskund'
+    },
+    {
+      quote: 'Jag förlorade mitt jobb men hittade meningen med livet i Jontes Grevé 2.0.',
+      author: 'Stefan',
+      role: 'Yrkesförändring'
+    },
+    {
+      quote: 'Denna ost fick mig att gifta om mig. Två gånger.',
+      author: 'Annika',
+      role: 'Livsförändrare'
+    }
+  ];
+
+  const stmt = database.prepare(`
+    INSERT INTO testimonials (quote, author, role, is_approved)
+    VALUES (?, ?, ?, 1)
+  `);
+
+  for (const testimonial of testimonials) {
+    try {
+      stmt.run(testimonial.quote, testimonial.author, testimonial.role);
+    } catch (error) {
+      // Silently ignore errors
+    }
+  }
+}
+
+function seedWeeklyCheese(database: Database.Database) {
+  try {
+    const currentWeek = getWeek(new Date());
+    const currentYear = new Date().getFullYear();
+
+    const midnight = (database.prepare('SELECT id FROM cheeses WHERE name = ?').get('Midnight Västerbotten') as { id: number });
+
+    if (midnight) {
+      const dontPairWith = [
+        'Något sött (sockret försöker dölja ostens sanna väsen)',
+        'Annat än vatten att dricka (konkurrerar om uppmärksamhet)',
+        'Musik högre än viskningar (störar meditatönen)',
+        'Andra människor närvarande (de förstår inte)'
+      ];
+
+      database.prepare(`
+        INSERT INTO weekly_cheese (cheese_id, week_number, year, description, why_selected, how_to_eat, dont_pair_with_json, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+      `).run(
+        midnight.id,
+        currentWeek,
+        currentYear,
+        'En sammansmältning av midnattens mysterium och västerbottens rika traditioner. Denna ost är så intensiv att Jonte behövde ta en veckas paus efter första tuggan för att återhämta sig.',
+        'Jonte valde denna ost denna vecka för att den helt enkelt är det närmaste han kommer att hitta till perfektion i ostform. Enligt honom är detta det enda han behöver äta för att överleva de kommande 7 dagarna.',
+        'Serveras bäst på rumtemperatur med ett glas vatten i närheten. Skär i tunna skivor och njut långsamt. Jonte rekommenderar att äta denna ost medan du stirrar ut genom ett mörkt fönster och funderar på ostens djupa mening.',
+        JSON.stringify(dontPairWith)
+      );
+    }
+  } catch (error) {
+    // Silently ignore errors
+  }
+}
+
+function seedPreviousWeeks(database: Database.Database) {
+  try {
+    const currentYear = new Date().getFullYear();
+    const previousWeeks = [
+      { week: 1, name: 'Grevé 2.0', mood: '🚀' },
+      { week: 2, name: 'Koppsvett', mood: '💪' },
+      { week: 3, name: 'Narkososten', mood: '😴' }
+    ];
+
+    const stmt = database.prepare(`
+      INSERT INTO previous_weeks (week_number, year, cheese_name, mood_emoji)
+      VALUES (?, ?, ?, ?)
+    `);
+
+    for (const week of previousWeeks) {
+      try {
+        stmt.run(week.week, currentYear, week.name, week.mood);
+      } catch (error) {
+        // Silently ignore errors
+      }
+    }
+  } catch (error) {
+    // Silently ignore errors
+  }
+}
 
 // Helper functions for queries
 export function getCheeses() {
