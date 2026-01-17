@@ -8,6 +8,7 @@ This project is configured for Vercel serverless deployment with Astro 5 and SQL
 
 - **`astro.config.mjs`** - Uses `@astrojs/vercel/serverless` adapter
 - **`vercel.json`** - Vercel-specific build and function configuration
+- **`src/db/index.ts`** - Database initialization with embedded schema (no external files needed)
 
 ### Database Management
 
@@ -18,18 +19,25 @@ The SQLite database is handled specially for Vercel's serverless environment:
 
 #### Database Initialization Strategy
 
-To ensure data is available in Vercel's ephemeral `/tmp` environment:
+To ensure tables are available in Vercel's ephemeral `/tmp` environment:
 
-1. **Build Time (Prebuild)**: `scripts/ensure-db.js` runs during build
-   - Creates schema from `src/db/schema.sql`
-   - Seeds all initial data (cheeses, testimonials, weekly cheese, etc.)
-   - Creates `jonte-osten.db` with all tables and data prepopulated
+1. **Runtime Initialization**: When the app starts (locally or on Vercel)
+   - `src/db/index.ts` has an embedded schema (SCHEMA constant)
+   - On first database access, `initDatabase()` creates all tables automatically
+   - Uses `CREATE TABLE IF NOT EXISTS` (idempotent, safe to run every time)
+   - Tables are created before any queries run
+   - **No file I/O needed** - schema is embedded in the code
+
+2. **Build Time (Prebuild)**: `scripts/ensure-db.js` runs during build (local only)
+   - Seeds initial data (cheeses, testimonials, weekly cheese, etc.)
+   - Creates `jonte-osten.db` with prepopulated data
    - **This database file is committed to the repository**
 
-2. **Runtime**: When the app starts on Vercel
-   - Database file is included in the build
-   - Copied to `/tmp/jonte-osten.db` on first function invocation
-   - Available for all queries throughout function lifetime
+3. **On Vercel**:
+   - Database file from repo is included in build
+   - If it needs tables, they're auto-created by embedded schema
+   - Data from prepopulated file is available
+   - Subsequent requests reuse the same database in `/tmp`
 
 ### How It Works
 
@@ -96,10 +104,13 @@ Database location: `/tmp/jonte-osten.db`
 ### Troubleshooting
 
 **"no such table: cheeses" errors:**
-- This was fixed by moving data seeding to build time (`scripts/ensure-db.js`)
-- Ensure `jonte-osten.db` is committed to the repository
-- The database file should be included in the Vercel build
-- Check build logs to verify prebuild script ran successfully
+- **FIXED**: Database schema is now embedded directly in `src/db/index.ts`
+- Tables are created automatically on first app start (no file I/O required)
+- Both local and Vercel now use the same embedded schema
+- If you still see this error:
+  - Check Vercel function logs for database initialization errors
+  - Verify `better-sqlite3` package is installed
+  - Try redeploying to trigger a fresh initialization
 
 **404 NOT_FOUND errors:**
 - Check that database file is included in build output
